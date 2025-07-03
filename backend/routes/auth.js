@@ -19,10 +19,8 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, fs.readFileSync('../private.key', 'utf8'), { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
-            res.json({ token });
-        });
+        const token = jwt.sign(payload, fs.readFileSync('../private.key', 'utf8'), { expiresIn: '1h' });
+        res.json({ token });
     } catch (err) {
         res.status(500).send('Server error - register!');
     }

@@ -5,6 +5,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const path = require('path');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -19,9 +20,11 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         const payload = { user: { id: user.id } };
-        const token = jwt.sign(payload, fs.readFileSync('../private.key', 'utf8'), { expiresIn: '1h' });
+        const privateKey = fs.readFileSync(path.join(__dirname, '../private.key'), 'utf8');
+        const token = jwt.sign(payload, privateKey, { expiresIn: '1h', algorithm: 'RS256' });
         res.json({ token });
     } catch (err) {
+        console.error("err = ", err.message);
         res.status(500).send('Server error - register!');
     }
 });

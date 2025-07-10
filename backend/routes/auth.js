@@ -20,7 +20,7 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         const payload = { user: { id: user.id } };
-        const privateKey = fs.readFileSync(path.join(__dirname, '../private.key'), 'utf8');
+        const privateKey = fs.readFileSync(path.join(__dirname, '../../private.key'), 'utf8');
         const token = jwt.sign(payload, privateKey, { expiresIn: '1h', algorithm: 'RS256' });
         res.json({ token });
     } catch (err) {
@@ -40,11 +40,11 @@ router.post('/login', async (req, res) => {
         if (!passwordMatch) return res.status(400).json({ message: 'Invalid password.' });
 
         const payload = { user: { id: user.id } };
-        jwt.sign(payload, fs.readFileSync('../private.key', 'utf8'), { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err;
-            res.json({ token });
-        });
+        const privateKey = fs.readFileSync(path.join(__dirname, '../../private.key'), 'utf8');
+        const token = jwt.sign(payload, privateKey, { expiresIn: '1h', algorithm: 'RS256' });
+        res.json({ token });
     } catch (err) {
+        console.error("err = ", err.message);
         res.status(500).send('Server error - login!');
     }
 });
